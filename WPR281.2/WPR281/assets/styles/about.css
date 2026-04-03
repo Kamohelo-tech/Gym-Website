@@ -1,0 +1,54 @@
+.about-hero {
+    background: url('assets/images/about-hero.jpg') no-repeat center center/cover;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+.about-hero .hero-content {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.about-mission, .about-team {
+    text-align: center;
+    padding: 50px 20px;
+    max-width: 900px;
+    margin: auto;
+}
+.team-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: nowrap;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.team-member {
+    text-align: center;
+    width: 220px;
+}
+
+.team-member img {
+    width: 100%;
+    border-radius: 10px;
+    height: 280px;
+}
+
+.team-member h3 {
+    margin-top: 10px;
+    color: #8d1a00;
+}
+
+
+
+
+
+
+
