@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Statistics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        nav {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 8vh;
+    z-index: 2;
+    font-size: 18px;
+}
+
+.heading {
+    color: rgb(0, 0, 0);
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-size: 20px;  
+   
+}
+
+.nav-links {
+    display: flex;
+    justify-content: space-around;
+    width: 30%;  
+}
+
+.nav-links li {
+    list-style: none; 
+}
+  
+.nav-links a {
+    display: inline-block;
+    position: relative;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 3px;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 14px 16px; 
+    transition: all 500ms ease;
+    border-radius: 10px;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease-in-out;
+}
+
+.not-active:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.nav-links li a.active {  
+    background-color: #990f0f;
+}
+        body { font-family: Arial, sans-serif; text-align: center; background:darkgrey; }
+        .container { max-width: 800px; margin: auto; padding: 20px; background: whitesmoke; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 10px; }
+        .chart-container { position: relative; height: 300px; margin-bottom: 20px; }
+        button { margin: 10px; padding: 10px; border: none; background: #007bff; color: white; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #0056b3; }
+        .tabs span { cursor: pointer; font-weight: bold; margin-right: 20px; transition: color 0.3s; padding: 5px; }
+        .tabs .active { border-bottom: 2px solid red; color: red; }
+        
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            <h4>PulseUp</h4>
+        </div>
+        <ul class="nav-links">
+          <li><a class="active" href="index.html">Home</a></li>
+          <li><a class="not-active" href="about.html">About</a></li>
+          <li><a class="not-active" href="signup.html">Log Out</a></li>
+        </ul>
+      </nav><br><br><br><br><br><br>
+
+
+    <div class="container">
+        <h2>Workout Statistics</h2>
+        <div class="tabs">
+            
+            <span><a href="dashboard.html">MONTHLY VIEW</a></span>
+            <span class="active">DETAILED STATS</span>
+            <span><a href="goals.html">GOALS</a></span>
+        </div><br><br>
+        <button onclick="updateCharts()">Refresh Data</button>
+        <div class="chart-container"><canvas id="workoutTrend"></canvas></div>
+        <div class="chart-container"><canvas id="workoutBreakdown"></canvas></div>
+        <div class="chart-container"><canvas id="caloriesBurned"></canvas></div>
+    </div>
+
+    <script>
+        function updateCharts() {
+            let workouts = JSON.parse(localStorage.getItem("workouts")) || {};
+            let days = Object.keys(workouts);
+            let workoutTypes = {};
+            let caloriesByDay = [];
+
+            days.forEach(day => {
+                let workout = workouts[day];
+                caloriesByDay.push({ day, calories: Number(workout.calories) || 0 });
+                workoutTypes[workout.type] = (workoutTypes[workout.type] || 0) + 1;
+            });
+
+            let ctx1 = document.getElementById('workoutTrend').getContext('2d');
+            let ctx2 = document.getElementById('workoutBreakdown').getContext('2d');
+            let ctx3 = document.getElementById('caloriesBurned').getContext('2d');
+
+            if (window.workoutTrendChart) window.workoutTrendChart.destroy();
+            if (window.workoutBreakdownChart) window.workoutBreakdownChart.destroy();
+            if (window.caloriesBurnedChart) window.caloriesBurnedChart.destroy();
+
+            window.workoutTrendChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'Workouts Logged',
+                        data: days.map(day => 1),
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            window.workoutBreakdownChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(workoutTypes),
+                    datasets: [{
+                        label: 'Workout Types',
+                        data: Object.values(workoutTypes),
+                        backgroundColor: ['red', 'blue', 'green', 'yellow', 'purple']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            window.caloriesBurnedChart = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: caloriesByDay.map(entry => entry.day),
+                    datasets: [{
+                        label: 'Calories Burned',
+                        data: caloriesByDay.map(entry => entry.calories),
+                        backgroundColor: 'orange'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        updateCharts();
+    </script>
+</body>
+</html>

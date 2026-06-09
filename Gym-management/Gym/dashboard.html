@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseUp | Real-Time Fitness Dashboard</title>
+    <style>
+
+nav {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 8vh;
+    z-index: 2;
+    font-size: 18px;
+}
+
+.heading {
+    color: rgb(0, 0, 0);
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-size: 20px;  
+   
+}
+
+.nav-links {
+    display: flex;
+    justify-content: space-around;
+    width: 30%;  
+}
+
+.nav-links li {
+    list-style: none; 
+}
+  
+.nav-links a {
+    display: inline-block;
+    position: relative;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 3px;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 14px 16px; 
+    transition: all 500ms ease;
+    border-radius: 10px;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease-in-out;
+}
+
+.not-active:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.nav-links li a.active {  
+    background-color: #990f0f;
+}
+        body { font-family: Arial, sans-serif; text-align: center; background: darkgray; transition: background 0.3s ease-in-out; }
+        .container { max-width: 900px; margin: auto; padding: 20px; background: whitesmoke; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 10px; }
+        .header { text-align: left; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        .tabs span { cursor: pointer; font-weight: bold; margin-right: 20px; transition: color 0.3s; padding: 5px; }
+        .tabs .active { border-bottom: 2px solid red; color: red; }
+        .stats { display: flex; justify-content: space-around; margin: 20px 0; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .calendar { padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .day { min-height: 80px; text-align: center; padding: 10px; border-radius: 5px; cursor: pointer; transition: background 0.3s ease-in-out; font-weight: bold; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .day:hover { background: #eaeaea; }
+        .inactive { background: #ddd; cursor: default; opacity: 0.6; }
+        .today { border: 2px solid red; color: red; }
+        .logged { background: lightgreen; }
+        .workout-form { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .workout-form.active { display: block; opacity: 1; }
+        .workout-details-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.workout-details-modal.active {
+    display: block;
+}
+
+.workout-list-item {
+    background: #f4f4f4;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.delete-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            <h4>PulseUp</h4>
+        </div>
+        <ul class="nav-links">
+            <li><a class="not-active" href="index.html">Home</a></li>
+            <li><a class="active" href="about.html">About</a></li>
+            <li><a class="not-active" href="signup.html">Log Out</a></li>
+        </ul>
+    </nav>
+<br><br><br><br><br><br><br>
+
+
+    <div class="container">
+        <div class="header">PulseUp</div>
+        <div class="tabs">
+            <span class="active">MONTHLY VIEW</span>
+            <span><a href="stats.html">DETAILED STATS</a></span>
+            <span><a href="goals.html">GOALS</a></span>
+        </div>
+        <div class="calendar">
+            <div class="calendar-header">
+                <span id="month-year"></span>
+            </div>
+            <!-- <div class="stats">
+                <div><div id="distance">0</div><div>Distance (mi)</div></div>
+                <div><div id="duration">0</div><div>Duration (s)</div></div>
+                <div><div id="calories">0</div><div>Calories (kcal)</div></div>
+                <div><div id="workouts">0</div><div>Workouts</div></div>
+            </div> -->
+            <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+    </div>
+    <div class="workout-form" id="workout-form">
+        <h3>Log Workout</h3>
+        <label for="workout-type">Type:</label>
+        <select id="workout-type">
+            <option value="Running">Running</option>
+            <option value="Cycling">Cycling</option>
+            <option value="Swimming">Swimming</option>
+            <option value="Strength Training">Strength Training</option>
+            <option value="Yoga">Yoga</option>
+        </select><br><br>
+        <label for="workout-duration">Duration (min):</label>
+        <input type="number" id="workout-duration"><br><br>
+        <label for="workout-distance">Distance (mi):</label>
+        <input type="number" id="workout-distance"><br><br>
+        <label for="workout-calories">Calories (kcal):</label>
+        <input type="number" id="workout-calories"><br><br>
+        <button onclick="saveWorkout()">Add Workout</button>
+        <button onclick="closeForm()">Close</button>
+    </div>
+    
+    <!-- Workout Details Modal -->
+    <div class="workout-details-modal" id="workout-details">
+        <div class="modal-content">
+            <h3>Workouts for <span id="workout-day"></span></h3>
+            <ul id="workout-list"></ul>
+            <button onclick="closeWorkoutDetails()">Close</button>
+        </div>
+    </div>
+    
+    <div class="charts-container">
+        <canvas id="workoutTrend"></canvas>
+        <canvas id="workoutBreakdown"></canvas>
+        <canvas id="caloriesBurned"></canvas>
+    </div>
+    <script>
+        let workouts = JSON.parse(localStorage.getItem("workouts")) || {};
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById("calendar-grid");
+            calendarGrid.innerHTML = "";
+            
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            
+            document.getElementById("month-year").textContent = today.toLocaleString("default", { month: "long" }) + " " + year;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            for (let i = 0; i < firstDay; i++) {
+                let emptyCell = document.createElement("div");
+                emptyCell.classList.add("day", "inactive");
+                calendarGrid.appendChild(emptyCell);
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                let dayCell = document.createElement("div");
+                dayCell.classList.add("day");
+                dayCell.textContent = day;
+                
+                if (day === today.getDate()) {
+                    dayCell.classList.add("today");
+                }
+                if (workouts[day]) {
+                    dayCell.classList.add("logged");
+                    dayCell.onclick = () => viewWorkoutDetails(day);
+                } else {
+                    dayCell.onclick = () => openForm(day);
+                }
+
+                
+                calendarGrid.appendChild(dayCell);
+            }
+        }
+        
+        function openForm(day) {
+            document.getElementById("workout-form").classList.add("active");
+            document.getElementById("workout-form").dataset.day = day;
+        }
+        
+        function closeForm() {
+            document.getElementById("workout-form").classList.remove("active");
+        }
+        
+        function saveWorkout() {
+        let day = document.getElementById("workout-form").dataset.day;
+        let type = document.getElementById("workout-type").value;
+        let duration = document.getElementById("workout-duration").value;
+        let distance = document.getElementById("workout-distance").value;
+        let calories = document.getElementById("workout-calories").value;
+
+        let workouts = JSON.parse(localStorage.getItem("workouts")) || {};
+
+            if (!workouts[day]) {
+                workouts[day] = [];
+            }
+
+            workouts[day].push({ type, duration, distance, calories });
+            localStorage.setItem("workouts", JSON.stringify(workouts));
+            
+            updateCalendarDay(day);
+            showCongratulations();
+            closeForm();
+        }
+
+        function updateStats() {
+        stats.distance = Object.values(workouts).reduce((sum, w) => sum + (parseFloat(w.distance) || 0), 0);
+        stats.duration = Object.values(workouts).reduce((sum, w) => sum + (parseFloat(w.duration) || 0), 0);
+        stats.calories = Object.values(workouts).reduce((sum, w) => sum + (parseFloat(w.calories) || 0), 0);
+        stats.workouts = Object.keys(workouts).length;
+        
+        animateProgress("distance", stats.distance);
+        animateProgress("duration", stats.duration);
+        animateProgress("calories", stats.calories);
+        animateProgress("workouts", stats.workouts);
+        updateCharts();
+    }
+    
+    function animateProgress(id, value) {
+        let element = document.getElementById(id);
+        let current = 0;
+        let interval = setInterval(() => {
+            if (current >= value) clearInterval(interval);
+            else element.textContent = ++current;
+        }, 10);
+    }
+
+        function updateCalendarDay(day) {
+            let calendarDays = document.querySelectorAll(".day");
+            calendarDays.forEach(dayCell => {
+                if (dayCell.textContent == day) {
+                    dayCell.classList.add("logged");
+                    dayCell.onclick = () => viewWorkoutDetails(day);
+                    
+                    let badge = dayCell.querySelector(".workout-count");
+                    if (!badge) {
+                        badge = document.createElement("span");
+                        badge.classList.add("workout-count");
+                        badge.style.background = "red";
+                        badge.style.color = "white";
+                        badge.style.borderRadius = "50%";
+                        badge.style.padding = "2px 6px";
+                        badge.style.marginLeft = "5px";
+                        dayCell.appendChild(badge);
+                    }
+                    badge.textContent = workouts[day].length;
+                }
+            });
+        }
+
+        function showCongratulations() {
+            const message = document.createElement("div");
+            message.textContent = "🎉 Congratulations on logging your workout! 🎉";
+            message.style.position = "fixed";
+            message.style.top = "50%";
+            message.style.left = "50%";
+            message.style.transform = "translate(-50%, -50%)";
+            message.style.background = "#4CAF50";
+            message.style.color = "white";
+            message.style.padding = "15px 30px";
+            message.style.borderRadius = "10px";
+            message.style.fontSize = "20px";
+            message.style.fontWeight = "bold";
+            message.style.textAlign = "center";
+            message.style.opacity = "1";
+            message.style.transition = "opacity 1s ease-in-out";
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                message.style.opacity = "0";
+                setTimeout(() => message.remove(), 1000);
+            }, 2000);
+        }
+                function confirmDeleteWorkout(day) {
+                    if (confirm("Delete this workout?")) {
+                        delete workouts[day];
+                        localStorage.setItem("workouts", JSON.stringify(workouts));
+                        generateCalendar();
+                    }
+                }
+                
+                generateCalendar();
+        
+        workouts = JSON.parse(localStorage.getItem("workouts")) || {};
+
+        function viewWorkoutDetails(day) {
+    let workoutList = document.getElementById("workout-list");
+    let workoutModal = document.getElementById("workout-details");
+    let workoutsForDay = workouts[day] || [];
+
+    document.getElementById("workout-day").textContent = `Day ${day}`;
+    workoutList.innerHTML = "";
+
+    workoutsForDay.forEach((workout, index) => {
+        let listItem = document.createElement("li");
+        listItem.classList.add("workout-list-item");
+        listItem.innerHTML = `
+            ${workout.type} - ${workout.duration} min - ${workout.distance} mi - ${workout.calories} kcal
+            <button class="delete-btn" onclick="deleteWorkout(${day}, ${index})">X</button>
+        `;
+        workoutList.appendChild(listItem);
+    });
+
+    workoutModal.classList.add("active");
+}
+
+function closeWorkoutDetails() {
+    document.getElementById("workout-details").classList.remove("active");
+}
+
+function deleteWorkout(day, index) {
+    workouts[day].splice(index, 1);
+
+    if (workouts[day].length === 0) {
+        delete workouts[day];
+    }
+
+    localStorage.setItem("workouts", JSON.stringify(workouts));
+    viewWorkoutDetails(day);
+    generateCalendar();
+}
+
+function generateCalendar() {
+    const calendarGrid = document.getElementById("calendar-grid");
+    calendarGrid.innerHTML = "";
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    document.getElementById("month-year").textContent = today.toLocaleString("default", { month: "long" }) + " " + year;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+        let emptyCell = document.createElement("div");
+        emptyCell.classList.add("day", "inactive");
+        calendarGrid.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        let dayCell = document.createElement("div");
+        dayCell.classList.add("day");
+        dayCell.textContent = day;
+
+        if (day === today.getDate()) {
+            dayCell.classList.add("today");
+        }
+
+        if (workouts[day]) {
+            dayCell.classList.add("logged");
+            let badge = document.createElement("span");
+            badge.textContent = workouts[day].length;
+            badge.style.background = "red";
+            badge.style.color = "white";
+            badge.style.borderRadius = "50%";
+            badge.style.padding = "2px 6px";
+            badge.style.marginLeft = "5px";
+            dayCell.appendChild(badge);
+
+            dayCell.onclick = () => viewWorkoutDetails(day);
+        } else {
+            dayCell.onclick = () => openForm(day);
+        }
+
+        calendarGrid.appendChild(dayCell);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", generateCalendar);
+
+    </script>
+</body>
+</html>

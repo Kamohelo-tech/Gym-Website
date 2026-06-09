@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goals & Challenges</title>
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <style>
+        
+        .container { max-width: 900px; margin: auto; padding: 20px; background: #111; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 10px; color: #F6F6F6; }
+        .header { text-align: left; font-size: 24px; font-weight: bold; margin-bottom: 10px; color: white; }
+        .tabs { display: flex; justify-content: left; padding-bottom: 10px; border-bottom: 2px solid #8d1a00; }
+        .tabs span { cursor: pointer; font-weight: bold; margin-right: 20px; transition: color 0.3s; padding: 5px; color: white; }
+        .tabs .active { border-bottom: 2px solid #8d1a00; color: #8d1a00; }
+        .goal-list, .challenge-list { text-align: left; margin-top: 20px; }
+        .goal-item, .challenge-item { background: #222; padding: 10px; margin: 5px 0; border-radius: 5px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s ease-in-out; }
+        .goal-item.completed { background: #006400; color: white; }
+        .goal-item:hover, .challenge-item:hover { background: #333; }
+        .delete-btn { background: #8d1a00; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; transition: background 0.3s ease-in-out; }
+        .delete-btn:hover { background: darkred; }
+        .input-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
+        input, select { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; box-sizing: border-box; }
+        button { padding: 10px; cursor: pointer; background: #8d1a00; color: white; border: none; border-radius: 5px; transition: background 0.3s ease-in-out; }
+        button:hover { background: darkred; }
+    </style>
+</head>
+<body> <nav>
+    <div class="heading">
+        <h4>PulseUp</h4>
+    </div>
+    <ul class="nav-links">
+      <li><a class="active" href="index.html">Home</a></li>
+      <li><a class="not-active" href="about.html">About</a></li>
+      <li><a class="not-active" href="signup.html">Log Out</a></li>
+    </ul>
+  </nav>
+  <br><br><br><br><br><br>
+    <div class="container">
+        <div class="header">GOALS & CHALLENGES</div>
+        <div class="tabs">
+            <span><a href="dashboard.html">MONTHLY VIEW</a></span>
+           <span><a href="stats.html" class="not-active">Detailed stats</a></span>
+         <span class="active">GOALS</span>
+        </div> 
+        
+            
+           
+        <h3>Set Your Fitness Goals</h3>
+        <div class="input-container">
+            <input type="text" id="goal-input" placeholder="Enter your goal (e.g., Run 50 miles)">
+            <button onclick="addGoal()">Add Goal</button>
+        </div>
+        <ul id="goal-list" class="goal-list"></ul>
+
+        <h3>Join a Challenge</h3>
+        <div class="input-container">
+            <select id="challenge-input">
+                <option value="Run 10 miles in a week">Run 10 miles in a week</option>
+                <option value="Burn 5000 calories in a month">Burn 5000 calories in a month</option>
+                <option value="Complete 20 workouts">Complete 20 workouts</option>
+            </select>
+            <button onclick="joinChallenge()">Join</button>
+        </div>
+        <ul id="challenge-list" class="challenge-list"></ul>
+    </div>
+    <br>
+    <br>
+    <img src="assets/images/pain.webp" alt="Pain image" height="100%" width="100%">
+    <script>
+        let goals = JSON.parse(localStorage.getItem("goals")) || [];
+        let completedGoals = JSON.parse(localStorage.getItem("completedGoals")) || [];
+        let challenges = JSON.parse(localStorage.getItem("challenges")) || [];
+
+        function addGoal() {
+            let goalInput = document.getElementById("goal-input").value;
+            if (goalInput) {
+                goals.push(goalInput);
+                localStorage.setItem("goals", JSON.stringify(goals));
+                updateGoalList();
+                document.getElementById("goal-input").value = "";
+            }
+        }
+
+        function markGoalAsCompleted(index) {
+            let goal = goals[index];
+            if (!completedGoals.includes(goal)) {
+                completedGoals.push(goal);
+                localStorage.setItem("completedGoals", JSON.stringify(completedGoals));
+                updateGoalList();
+            }
+        }
+
+        function joinChallenge() {
+            let challengeInput = document.getElementById("challenge-input").value;
+            if (!challenges.includes(challengeInput)) {
+                challenges.push(challengeInput);
+                localStorage.setItem("challenges", JSON.stringify(challenges));
+                updateChallengeList();
+            }
+        }
+
+        function removeGoal(index) {
+            goals.splice(index, 1);
+            localStorage.setItem("goals", JSON.stringify(goals));
+            updateGoalList();
+        }
+
+        function removeChallenge(index) {
+            challenges.splice(index, 1);
+            localStorage.setItem("challenges", JSON.stringify(challenges));
+            updateChallengeList();
+        }
+
+        function updateGoalList() {
+            let goalList = document.getElementById("goal-list");
+            goalList.innerHTML = "";
+            goals.forEach((goal, index) => {
+                let completedClass = completedGoals.includes(goal) ? "completed" : "";
+                goalList.innerHTML += `<li class="goal-item ${completedClass}">${goal} 
+                    <button class="delete-btn" onclick="removeGoal(${index})">X</button>
+                    <button class="delete-btn" onclick="markGoalAsCompleted(${index})">✔</button>
+                </li>`;
+            });
+        }
+
+        function updateChallengeList() {
+            let challengeList = document.getElementById("challenge-list");
+            challengeList.innerHTML = "";
+            challenges.forEach((challenge, index) => {
+                challengeList.innerHTML += `<li class="challenge-item">${challenge} <button class="delete-btn" onclick="removeChallenge(${index})">X</button></li>`;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateGoalList();
+            updateChallengeList();
+        });
+    </script>
+</body>
+</html>

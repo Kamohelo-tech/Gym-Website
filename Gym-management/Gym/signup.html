@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles/signup.css">       
+</head>
+<body>
+    <nav>
+        <div class="heading">
+            <h4>PulseUp</h4>
+        </div>
+        <ul class="nav-links">
+            <li><a class="not-active" href="index.html">Home</a></li>
+            <li><a class="active" href="about.html">About</a></li>
+            <li><a class="not-active" href="signup.html">Sign Up</a></li>
+        </ul>
+    </nav>
+
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+    <div class="container" id="container">
+        <div class="left" id="left-panel">
+            <div class="form-container">
+                <h2>Sign up now</h2>
+                <p>Create a free account</p>
+                <div class="google-btn">
+                    <img src="assets/images/google.png"> Sign up with Google
+                </div>
+                <div class="divider">or</div>
+                <input type="email" placeholder="Email address"  required>
+                <input type="password" placeholder="Password" required >
+                <input type="password" placeholder="Repeat password" required>
+                <button class="signup-btn">Sign up</button>
+                <div class="signin-link">Already have an account? <a href="#" id="signin-btn">Sign in</a></div>
+                <div class="signin-link"><a href="index.html">Cancel</a></div>
+            </div>
+        </div>
+        <div class="right" id="right-panel">
+            <div class="form-container" id="login-form" style="opacity: 0; transform: translateX(50%); transition: opacity 0.8s, transform 0.8s;">
+                <h2>Welcome Back</h2>
+                <p>Sign in to your account</p>
+                <input type="email" placeholder="Email address">
+                <input type="password" placeholder="Password">
+                <button class="signin-btn">Sign in</button>
+                <div class="signin-link"><a href="index.html" style="color:white">Cancel</a></div>
+            </div>
+        </div>
+    </div>
+    <script defer src="assets/scripts/main.js"></script>
+</body>
+</html>
